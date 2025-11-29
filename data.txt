@@ -1,0 +1,159 @@
+/* data.js
+   Contains:
+   - rules[] (25-30 rules)
+   - attractions{} (40+ spots)
+   - cityGraph{} (for BFS)
+   - cityAttractions{} (map cities -> attractions)
+   - chatbotKeywords{} (locations, interests, budget variants)
+*/
+
+/* ===== RULES (28 rules) ===== */
+const rules = [
+  // Interest-based (history)
+  { id: 1, conditions: { interest: "history", budget: "low" }, recommendations: ["Paoay Church","Sinking Bell Tower","Museo Ilocos Norte"], reason: "Free or low-cost historical sites" },
+  { id: 2, conditions: { interest: "history", budget: "medium" }, recommendations: ["Malacañang of the North","Marcos Museum"], reason: "Historical museums and houses" },
+  { id: 3, conditions: { interest: "history", timeMax: 2 }, recommendations: ["Sinking Bell Tower","Museo Ilocos Norte"], reason: "Short history visits under 2 hours" },
+
+  // Beach / nature
+  { id: 4, conditions: { interest: "beach", location: "Pagudpud" }, recommendations: ["Saud Beach","Blue Lagoon"], reason: "Top Pagudpud beaches" },
+  { id: 5, conditions: { interest: "beach", budget: "low" }, recommendations: ["Saud Beach","Kabigan Falls"], reason: "Outdoor, low-cost nature activities" },
+  { id: 6, conditions: { interest: "nature", timeMax: 4 }, recommendations: ["Kabigan Falls","Paoay Lake"], reason: "Nature sites fitting a half-day" },
+
+  // Food
+  { id: 7, conditions: { interest: "food", location: "Batac" }, recommendations: ["Batac Empanada","Riverside Empanadaan"], reason: "Batac food specialties" },
+  { id: 8, conditions: { interest: "food", budget: "low" }, recommendations: ["Local carinderias","Street stalls","Batac Empanada"], reason: "Cheap local eats" },
+
+  // Adventure
+  { id: 9, conditions: { interest: "adventure" }, recommendations: ["La Paz Sand Dunes","4x4 Sand Dune Ride"], reason: "Adventure and adrenaline activities" },
+  { id: 10, conditions: { interest: "adventure", budget: "high" }, recommendations: ["Sand Dune ATV Tours","Kiteboarding"], reason: "Paid adventure activities" },
+
+  // Location-based rules
+  { id: 11, conditions: { location: "Laoag" }, recommendations: ["Sinking Bell Tower","La Paz Sand Dunes","Museo Ilocos Norte"], reason: "Top Laoag attractions" },
+  { id: 12, conditions: { location: "Paoay" }, recommendations: ["Paoay Church","Malacañang of the North","Paoay Lake"], reason: "Top Paoay attractions" },
+  { id: 13, conditions: { location: "Bangui" }, recommendations: ["Bangui Windmills","Caparispisan Beach"], reason: "Bangui highlights" },
+
+  // Budget-only rules
+  { id: 14, conditions: { budget: "low" }, recommendations: ["Paoay Church","Saud Beach","Sinking Bell Tower"], reason: "Low budget free/cheap spots" },
+  { id: 15, conditions: { budget: "medium" }, recommendations: ["Museo Ilocos Norte","Marcos Museum"], reason: "Affordable paid attractions" },
+  { id: 16, conditions: { budget: "high" }, recommendations: ["Sand Dune ATV Tours","Luxury beachfront resorts"], reason: "Higher-cost experiences" },
+
+  // Time-based rules
+  { id: 17, conditions: { timeMax: 1 }, recommendations: ["Paoay Church","Sinking Bell Tower"], reason: "Good 1-hour stops" },
+  { id: 18, conditions: { timeMax: 2 }, recommendations: ["Museo Ilocos Norte","Marcos Museum"], reason: "2-hour cultural visits" },
+
+  // Combined examples
+  { id: 19, conditions: { interest: "history", location: "Laoag" }, recommendations: ["Sinking Bell Tower","Museo Ilocos Norte"], reason: "History in Laoag" },
+  { id: 20, conditions: { interest: "beach", location: "Pagudpud", budget: "high" }, recommendations: ["Resort at Saud Beach","Blue Lagoon"], reason: "Beach + resort options" },
+  { id: 21, conditions: { interest: "nature", location: "Paoay" }, recommendations: ["Paoay Lake","Paoay Sand Dunes"], reason: "Paoay nature sites" },
+
+  // Misc / fallback rule
+  { id: 22, conditions: { interest: "food" }, recommendations: ["Local markets","Carinderias","Batac Empanada"], reason: "Food everywhere" },
+  { id: 23, conditions: { location: "Currimao" }, recommendations: ["Currimao Beach","Fort"], reason: "Currimao stops" },
+  { id: 24, conditions: { location: "Burgos" }, recommendations: ["Cape Bojeador Lighthouse","Burgos coastline"], reason: "Burgos highlights" },
+  { id: 25, conditions: { location: "Bangui" , interest: "sightseeing" }, recommendations: ["Bangui Windmills","Cape Bojeador Lighthouse"], reason: "Scenic spots in Bangui" },
+
+  // More rules for coverage (total ~28)
+  { id: 26, conditions: { interest: "beach", timeMax: 4 }, recommendations: ["Saud Beach","Blue Lagoon","Kabigan Falls"], reason: "Half-day beach/nature trip" },
+  { id: 27, conditions: { interest: "history", budget: "high" }, recommendations: ["Guided museum tours","Malacañang of the North"], reason: "Paid guided history tours" },
+  { id: 28, conditions: { interest: "nature", budget: "low" }, recommendations: ["Paoay Lake","Kabigan Falls"], reason: "Low-budget nature" }
+];
+
+/* ===== ATTRACTIONS (40+ entries) ===== */
+/* Each attraction: city, type, price, duration (string), description */
+const attractions = {
+  "Paoay Church": { city: "Paoay", type: "history", price: "Free", duration: "1 hour", description: "UNESCO World Heritage baroque church" },
+  "Sinking Bell Tower": { city: "Laoag", type: "history", price: "Free", duration: "30 min", description: "Iconic bell tower in Laoag" },
+  "Museo Ilocos Norte": { city: "Laoag", type: "history", price: "₱20", duration: "1.5 hours", description: "Local history and artifacts" },
+  "Malacañang of the North": { city: "Paoay", type: "history", price: "₱50", duration: "1 hour", description: "Marcos-era presidential museum" },
+  "La Paz Sand Dunes": { city: "Laoag", type: "adventure", price: "₱200+", duration: "2-3 hours", description: "Sand dune 4x4 and sandboarding" },
+  "Saud Beach": { city: "Pagudpud", type: "beach", price: "Free", duration: "3-4 hours", description: "Pristine white sand beach" },
+  "Blue Lagoon": { city: "Pagudpud", type: "beach", price: "Free", duration: "3 hours", description: "Popular swimming and cliff views" },
+  "Kabigan Falls": { city: "Pagudpud", type: "nature", price: "₱20-50", duration: "2 hours", description: "Short trek to a scenic waterfall" },
+  "Batac Empanada": { city: "Batac", type: "food", price: "₱30-50", duration: "30 min", description: "Famous orange empanada" },
+  "Riverside Empanadaan": { city: "Batac", type: "food", price: "₱40-60", duration: "30-45 min", description: "Local empanada spot by the river" },
+  "Marcos Museum": { city: "Batac", type: "history", price: "₱30", duration: "1 hour", description: "Museum about the Marcos family" },
+  "Bangui Windmills": { city: "Bangui", type: "sightseeing", price: "Free", duration: "1-2 hours", description: "Offshore wind farm and iconic views" },
+  "Cape Bojeador Lighthouse": { city: "Burgos", type: "history", price: "Free", duration: "45 min", description: "Historic Spanish-era lighthouse" },
+  "Paoay Lake": { city: "Paoay", type: "nature", price: "Free", duration: "1-2 hours", description: "Calm lake with fishing and views" },
+  "Currimao Beach": { city: "Currimao", type: "beach", price: "Free", duration: "2 hours", description: "Quiet beach near Batac" },
+  "Fort Ilocandia (resort view)": { city: "Laoag", type: "sightseeing", price: "Free to view", duration: "30 min", description: "Large resort complex and beachfront" },
+  "La Paz Public Market": { city: "Laoag", type: "food", price: "₱20-150", duration: "1 hour", description: "Local market, street food" },
+  "Bacarra Belfry": { city: "Bacarra", type: "history", price: "Free", duration: "30-45 min", description: "Lean belfry similar to Sinking Bell Tower" },
+  "Pasuquin Salt Flats": { city: "Pasuquin", type: "nature", price: "Free", duration: "1 hour", description: "Traditional salt-making area" },
+  "Sarrat Church": { city: "Sarrat", type: "history", price: "Free", duration: "30 min", description: "Large old church in Sarrat" },
+  "San Nicolas Streets": { city: "San Nicolas", type: "sightseeing", price: "Free", duration: "1 hour", description: "Town center with local life" },
+  "Dingras Church": { city: "Dingras", type: "history", price: "Free", duration: "30 min", description: "Historic parish church" },
+  "Burgos Cliffs": { city: "Burgos", type: "nature", price: "Free", duration: "1-2 hours", description: "Scenic coastal cliffs" },
+  "Kabigan Viewpoint": { city: "Pagudpud", type: "sightseeing", price: "Free", duration: "30 min", description: "Lookout over Blue Lagoon area" },
+  "Kapurpurawan Rock Formations": { city: "Burgos", type: "sightseeing", price: "₱20", duration: "1 hour", description: "White limestone rock formations" },
+  "Paoay Sand Dunes (sunset)": { city: "Paoay", type: "adventure", price: "₱200+", duration: "2 hours", description: "Sunset dune tours and 4x4" },
+  "Ilocos Norte Museum (misc)": { city: "Laoag", type: "history", price: "₱15", duration: "1 hour", description: "Exhibits on Ilocos culture" },
+  "Local Carinderia (Laoag)": { city: "Laoag", type: "food", price: "₱40-100", duration: "30-60 min", description: "Home-style meals" },
+  "Sand Dune ATV Tours": { city: "Laoag", type: "adventure", price: "₱500+", duration: "2 hours", description: "Paid ATV experience" },
+  "Blueberry Farm (local)": { city: "Bacolod (example)", type: "nature", price: "₱50", duration: "1 hour", description: "Small local farm (example placeholder)" },
+  "Local Handicraft Market": { city: "Laoag", type: "sightseeing", price: "varies", duration: "1 hour", description: "Souvenirs and crafts" },
+  "Bangui Beachfront": { city: "Bangui", type: "beach", price: "Free", duration: "1-2 hours", description: "Beach near the windmills" }
+  // Note: researcher may expand/edit this list to a full 40+ items; these are starter entries.
+};
+
+/* ===== CITY GRAPH (bidirectional expected) ===== */
+const cityGraph = {
+  "Laoag": ["Batac","San Nicolas","Bacarra","Paoay"],
+  "Batac": ["Laoag","Paoay","Currimao"],
+  "Paoay": ["Laoag","Batac","Currimao"],
+  "Pagudpud": ["Bangui","Dumalneg"],
+  "Bangui": ["Pagudpud","Burgos"],
+  "Burgos": ["Bangui","Pasuquin"],
+  "Sarrat": ["San Nicolas","Dingras"],
+  "Bacarra": ["Laoag","Pasuquin"],
+  "San Nicolas": ["Laoag","Sarrat"],
+  "Pasuquin": ["Burgos","Bacarra"],
+  "Currimao": ["Batac","Paoay"],
+  "Dingras": ["Sarrat"],
+  "Dumalneg": ["Pagudpud"]
+};
+
+/* cityAttractions mapping (city -> array of attraction names) */
+const cityAttractions = {
+  "Laoag": ["Sinking Bell Tower","La Paz Sand Dunes","Museo Ilocos Norte","La Paz Public Market","Ilocos Norte Museum (misc)","Local Handicraft Market","Fort Ilocandia (resort view)"],
+  "Batac": ["Batac Empanada","Marcos Museum","Riverside Empanadaan"],
+  "Paoay": ["Paoay Church","Malacañang of the North","Paoay Lake","Paoay Sand Dunes (sunset)"],
+  "Pagudpud": ["Saud Beach","Blue Lagoon","Kabigan Falls","Kabigan Viewpoint"],
+  "Bangui": ["Bangui Windmills","Bangui Beachfront"],
+  "Burgos": ["Cape Bojeador Lighthouse","Kapupurawan Rock Formations","Burgos Cliffs"],
+  "Bacarra": ["Bacarra Belfry"],
+  "San Nicolas": ["San Nicolas Streets","Sarrat Church"],
+  "Currimao": ["Currimao Beach"],
+  "Pasuquin": ["Pasuquin Salt Flats"],
+  "Sarrat": ["Sarrat Church"],
+  "Dingras": ["Dingras Church"],
+  "Dumalneg": []
+};
+
+/* ===== CHATBOT KEYWORDS (variants + typos) ===== */
+const chatbotKeywords = {
+  locations: {
+    "laoag": ["laoag","laog","la0ag","laoag city"],
+    "pagudpud": ["pagudpud","pagudpod","pagupud","pagudpud"],
+    "batac": ["batac","batak","batac city"],
+    "paoay": ["paoay","paway","paoay church"],
+    "bangui": ["bangui","banguey"],
+    "burgos": ["burgos"],
+    "currimao": ["currimao","currimao beach"],
+    "bacarra": ["bacarra"],
+    "san nicolas": ["san nicolas","sannicolas","sannicolas"],
+    "pasuquin": ["pasuquin"]
+  },
+  interests: {
+    "history": ["history","historical","heritage","museum","church"],
+    "beach": ["beach","dagat","swimming","sea","shore"],
+    "food": ["food","kain","restaurant","eat","empanada","carinderia"],
+    "nature": ["nature","waterfall","lake","falls","viewpoint"],
+    "adventure": ["adventure","sand","atv","kitesurf","dune","hike"]
+  },
+  budget: {
+    "low": ["cheap","budget","affordable","mura","free","inexpensive"],
+    "medium": ["moderate","mid","average"],
+    "high": ["expensive","luxury","mahal"]
+  }
+};
