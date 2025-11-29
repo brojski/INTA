@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>INTA — Ilocos Norte Tourism Assistant</title>
+    <style>
+      @import url("style.css");
+    </style>
+  </head>
+  <body>
+    <header>
+      <img
+        src=""
+        alt="INTA"
+        style="
+          width: 42px;
+          height: 42px;
+          border-radius: 8px;
+          background: linear-gradient(135deg, #0b71ea, #7bdcff);
+          display: inline-block;
+        "
+      />
+      <div>
+        <h1>INTA — Ilocos Norte Tourism Assistant</h1>
+        <div style="font-size: 13px; color: #556">
+          Planner • Chat • Nearby cities
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="grid">
+        <!-- Left column: Planner + results -->
+        <div>
+          <section class="card">
+            <h2 style="margin-top: 0; font-size: 16px">Trip planner</h2>
+            <div class="form-row">
+              <label for="interestSelect">Interest</label>
+              <select id="interestSelect"></select>
+            </div>
+            <div class="form-row">
+              <label for="budgetSelect">Budget</label>
+              <select id="budgetSelect"></select>
+            </div>
+            <div class="form-row">
+              <label for="locationSelect">Location</label>
+              <select id="locationSelect"></select>
+            </div>
+            <div class="form-row">
+              <label for="timeInput">Time (hrs)</label>
+              <input
+                id="timeInput"
+                type="number"
+                min="0.25"
+                step="0.25"
+                placeholder="e.g. 2"
+              />
+              <button id="recommendBtn">Recommend</button>
+            </div>
+          </section>
+
+          <section class="card" style="margin-top: 12px">
+            <h2 style="font-size: 16px; margin-top: 0">Nearby cities (BFS)</h2>
+            <div class="form-row">
+              <label for="bfsSelect">Start</label>
+              <select id="bfsSelect"></select>
+              <button id="bfsBtn" class="secondary">Find</button>
+            </div>
+          </section>
+
+          <section class="card" style="margin-top: 12px">
+            <h2 style="font-size: 16px; margin-top: 0">Results</h2>
+            <div id="resultsArea"></div>
+          </section>
+        </div>
+
+        <!-- Right column: Chat UI -->
+        <aside>
+          <section class="card">
+            <h2 style="margin-top: 0; font-size: 16px">Chat with INTA</h2>
+            <div id="chatWindow" class="chat-window" aria-live="polite"></div>
+
+            <div style="display: flex; gap: 8px; margin-top: 10px">
+              <input
+                id="chatInput"
+                type="text"
+                placeholder="Try: 'cheap food in Batac' or 'beach near Pagudpud'"
+              />
+              <button id="chatSendBtn">Send</button>
+            </div>
+          </section>
+
+          <section class="card" style="margin-top: 12px">
+            <h3 style="margin: 0 0 6px 0">Developer / debug</h3>
+            <div style="font-size: 13px; color: var(--muted)">
+              Console quick-tests available:
+              <code
+                >matchRules(), processChatMessage(), findNearestCities()</code
+              >
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <footer>Safe travels! — INTA Team</footer>
+    </main>
+
+    <!-- SCRIPTS: make sure these paths exist in your project -->
+    <script src="/scripts/data.js"></script>
+    <script src="/scripts/ruleEngine.js"></script>
+    <script src="/scripts/chatBot.js"></script>
+    <script src="/scripts/bfs.js"></script>
+    <script src="/scripts/main.js"></script>
+  </body>
+</html>
