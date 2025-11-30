@@ -121,10 +121,10 @@ const cityAttractions = {
   "Pagudpud": ["Saud Beach","Blue Lagoon","Kabigan Falls","Kabigan Viewpoint"],
   "Bangui": ["Bangui Windmills","Bangui Beachfront"],
   "Burgos": ["Cape Bojeador Lighthouse","Kapupurawan Rock Formations","Burgos Cliffs"],
-  "Bacarra": ["Bacarra Belfry"],
+  "Bacarra": ["Bacarra Belfry", "Domeless Bell Tower", "Bacarra Plaza"],
   "San Nicolas": ["San Nicolas Streets","Sarrat Church"],
-  "Currimao": ["Currimao Beach"],
-  "Pasuquin": ["Pasuquin Salt Flats"],
+  "Currimao": ["Currimao Beach", "Ship Wreck Pangil Beach"],
+  "Pasuquin": ["Pasuquin Salt Flats", "Barangay Sapat View Deck", "Sexy Beach", "Asaricha Tropical Beach Resort"],
   "Sarrat": ["Sarrat Church"],
   "Dingras": ["Dingras Church"],
   "Dumalneg": []
@@ -137,18 +137,18 @@ const chatbotKeywords = {
     "pagudpud": ["pagudpud","pagudpod","pagupud","pagudpud"],
     "batac": ["batac","batak","batac city"],
     "paoay": ["paoay","paway","paoay church"],
-    "bangui": ["bangui","banguey"],
-    "burgos": ["burgos"],
-    "currimao": ["currimao","currimao beach"],
-    "bacarra": ["bacarra"],
+    "bangui": ["bangui","banguey"], ["bangi"], ["bange"], ["bangay"],
+    "burgos": ["burgos"], ["borgos"], ["borgus"], ["bugos"], ["bogus"],
+    "currimao": ["currimao","currimao beach"], ["curimao"], ["curimo"], ["corimao"],
+    "bacarra": ["bacarra"], ["bacara"], ["bakarra"], ["bakara"],
     "san nicolas": ["san nicolas","sannicolas","sannicolas"],
-    "pasuquin": ["pasuquin"]
+    "pasuquin": ["pasuquin"], ["pasoquin"], ["pasoqin"], ["pasuqin"], ["pasokin"]
   },
   interests: {
     "history": ["history","historical","heritage","museum","church"],
     "beach": ["beach","dagat","swimming","sea","shore"],
     "food": ["food","kain","restaurant","eat","empanada","carinderia"],
-    "nature": ["nature","waterfall","lake","falls","viewpoint"],
+    "nature": ["nature","waterfall","lake","falls","viewpoint","viewdeck"],
     "adventure": ["adventure","sand","atv","kitesurf","dune","hike"]
   },
   budget: {
