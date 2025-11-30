@@ -116,16 +116,16 @@ const cityGraph = {
 /* cityAttractions mapping (city -> array of attraction names) */
 const cityAttractions = {
   "Laoag": ["Sinking Bell Tower","La Paz Sand Dunes","Museo Ilocos Norte","La Paz Public Market","Ilocos Norte Museum (misc)","Local Handicraft Market","Fort Ilocandia (resort view)"],
-  "Batac": ["Batac Empanada","Marcos Museum","Riverside Empanadaan"],
-  "Paoay": ["Paoay Church","Malacañang of the North","Paoay Lake","Paoay Sand Dunes (sunset)"],
+  "Batac": ["Batac Empanada","Marcos Museum","Riverside Empanadaan", "Batac Church"],
+  "Paoay": ["Paoay Church", "San Agustin Church", "Malacañang of the North","Paoay Lake","Paoay Sand Dunes (sunset)"],
   "Pagudpud": ["Saud Beach","Blue Lagoon","Kabigan Falls","Kabigan Viewpoint"],
   "Bangui": ["Bangui Windmills","Bangui Beachfront"],
   "Burgos": ["Cape Bojeador Lighthouse","Kapupurawan Rock Formations","Burgos Cliffs"],
-  "Bacarra": ["Bacarra Belfry", "Domeless Bell Tower", "Bacarra Plaza"],
-  "San Nicolas": ["San Nicolas Streets","Sarrat Church"],
-  "Currimao": ["Currimao Beach", "Ship Wreck Pangil Beach"],
+  "Bacarra": ["Bacarra Belfry", "Domeless Bell Tower", "Bacarra Plaza", "Museo de Bacarra", "Bacarra Old Spanish Watchtower"],
+  "San Nicolas": ["San Nicolas Streets","San Nicolas Church"],
+  "Currimao": ["Currimao Beach", "Ship Wreck Pangil Beach", "Pangil Coral Rock Formation"],
   "Pasuquin": ["Pasuquin Salt Flats", "Barangay Sapat View Deck", "Sexy Beach", "Asaricha Tropical Beach Resort"],
-  "Sarrat": ["Sarrat Church"],
+  "Sarrat": ["Sarrat Church", "Santa Monica Parish Church"],
   "Dingras": ["Dingras Church"],
   "Dumalneg": []
 };
